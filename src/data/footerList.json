@@ -1,0 +1,22 @@
+{
+    "sitemap": {
+        "title": "خارطة الموقع",
+        "list": [
+            { "title": "عن الشركة", "to": "/about-us" },
+            { "title": "خدماتنا", "to": "/services" },
+            { "title": "المدونة", "to": "/blogs" },
+            { "title": "عن التطبيق", "to": "/about-app" },
+            { "title": "التقديم لفرصة عمل", "to": "/jobs" }
+        ]
+    },
+    "policies":
+    {
+        "title": "سياسات وأحكام",
+        "list": [
+            { "title": "سياسة الفاحصين", "to": "/examiner-policy" },
+            { "title": "سياسة الخصوصية", "to": "/privacy-policy" },
+            { "title": "الشروط والأحكام", "to": "/policies-and-provisions" },
+            { "title": "الملكية الفكرية", "to": "/intellectual-property" }
+        ]
+    }
+}

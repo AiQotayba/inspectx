@@ -1,0 +1,27 @@
+name: Next.js CI/CD with IIS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # تأكد من استخدام نفس إصدار Node.js كما هو في بيئتك المحلية
+
+      - name: Deploy to IIS
+        run: |
+          cd C:\Program Files\iisnode\www
+          git pull 
+          npm install 
+          npm run build 
+        shell: powershell
