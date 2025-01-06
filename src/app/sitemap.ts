@@ -47,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // - /blogs 👍
     // - /blogs/... 👍
 
-    let url = process.env.NEXT_PUBLIC_apis || "https://inspectex.sa"
+    let url = process.env.NEXT_PUBLIC_apis?.replace("/api","") || "https://inspectex.sa"
     let data = [
         { url: "/" },
         { url: `/about-app` },
