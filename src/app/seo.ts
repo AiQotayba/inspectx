@@ -1,8 +1,6 @@
-import { Metadata } from "next"
-
 
 export default function SEO(metadata: any) {
-    let { title, description, keywords, openGraph, twitter, robots, images = "/images/logo.png", url } = metadata
+    let { title, description, keywords, images = "/images/logo.png", url } = metadata
     return {
         title,
         description,

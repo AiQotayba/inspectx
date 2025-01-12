@@ -1,11 +1,11 @@
-import type { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next';
 import { getClient } from '@/graphql/Apollo-client'
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const getAllPosts = async () => {
     try {
-        let allposts = gql`
-            query Posts { 
+        const allPosts = gql`
+            query Posts {
                 posts(first: 1000) {
                     nodes {
                         slug
@@ -19,75 +19,81 @@ export const getAllPosts = async () => {
                     }
                 }
             }
-        `
-        return await getClient().query({ query: allposts, fetchPolicy: "no-cache" })
+        `;
+        return await getClient().query({ query: allPosts, fetchPolicy: 'no-cache' });
     } catch (error) {
-        return { data: { posts: [] } }
+        console.error('خطأ أثناء جلب المقالات أو الصفحات:', error);
+        return { data: { posts: { nodes: [] }, pages: { nodes: [] } } };
     }
-}
-
+};
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    let content: any = await getAllPosts()
-    let posts = content.data.posts.nodes
-    let pages = content.data.pages.nodes
+    const content = await getAllPosts();
+    const posts = content?.data?.posts?.nodes || [];
+    const pages = content?.data?.pages?.nodes || [];
 
-    // - / 👍
-    // - /about-app 👍
-    // - /about-us 👍
-    // - /FAQ 👍
-    // - /services 👍
-    // - /get-service 👍
-    // - /surveies 👍
+    const url = process.env.NEXT_PUBLIC_apis?.replace('/api', '') || 'https://inspectex.sa';
+    const staticRoutes = [
+        { url: '/' },
+        { url: '/about-app' },
+        { url: '/about-us' },
+        { url: '/FAQ' },
+        { url: '/services' },
+        { url: '/get-service' },
+        { url: '/surveys' },
+        { url: '/privacy-policies' },
+        { url: '/policies-and-provisions' },
+        { url: '/jobs' },
+        { url: '/join-eng' },
+        { url: '/blogs' },
+    ];
 
-    // - /privacy-policys 👍
-    // - /policies-and-provisionss 👍
-    // - /jobs 👍
-    // - /join-eng 👍
-    // - /blogs 👍
-    // - /blogs/... 👍
-
-    let url = process.env.NEXT_PUBLIC_apis?.replace("/api","") || "https://inspectex.sa"
-    let data = [
-        { url: "/" },
-        { url: `/about-app` },
-        { url: `/about-us` },
-        { url: `/FAQ` },
-        { url: `/services` },
-        { url: `/get-service` },
-        { url: `/surveies` },
-        { url: `/privacy-policys` },
-        { url: `/policies-and-provisionss` },
-        { url: `/jobs` },
-        { url: `/join-eng` },
-        { url: `/blogs` },
-        ...posts.map((a: any) => {
-            return {
-                url: `/blogs/${a.slug}`,
-                lastModified: a?.modified ? a.modified.split("T")[0] : '2024-07-01',
-                changeFrequency: 'weekly',
-                priority: 0.5
-            }
-        }),
-        ...pages.map((a: any) => {
-            return {
-                url: `/${a.slug}`,
-                lastModified: a?.modified ? a.modified.split("T")[0] : '2024-07-01',
-                changeFrequency: 'weekly',
-                priority: 0.5
-            }
-        })
-    ] 
-    
-
-    let fullPages: any = data.map((a: any) => {
-        return {
-            url: `${url}${a.url}`,
-            lastModified: a?.lastModified ? a.lastModified.split("T")[0] : '2024-07-01',
+    const dynamicRoutes = [
+        ...posts.map((post: any) => ({
+            url: `/blogs/${encodeURI(post.slug)}`,
+            lastModified: post.modified
+                ? new Date(post.modified).toISOString()
+                : new Date().toISOString(),
             changeFrequency: 'weekly',
-            priority: 0.5
-        }
-    }) 
+            priority: 0.5,
+        })),
+        ...pages.map((page: any) => ({
+            url: `/${encodeURI(page.slug)}`,
+            lastModified: page.modified
+                ? new Date(page.modified).toISOString()
+                : new Date().toISOString(),
+            // changeFrequency: 'weekly',
+            // priority: 0.5,
+        })),
+    ];
 
-    return fullPages
+    return [
+        ...staticRoutes,
+        ...dynamicRoutes,
+    ].map((route: any) => ({
+        url: `${url}${route.url}`,
+        lastModified: route?.lastModified || new Date().toISOString(),
+        changeFrequency: 'weekly',
+        // priority: 0.5,
+    }));
 }
+
+
+// import type { MetadataRoute } from 'next'
+
+// export default function sitemap(): MetadataRoute.Sitemap {
+//     const url = process.env.NEXT_PUBLIC_apis?.replace('/api', '')// || 'https://inspectex.sa';
+
+//     return [
+//         {
+//             url: url + '/',
+//             lastModified: new Date(),
+//             // changeFrequency: 'monthly',
+//         },
+//         {
+//             url: url + '/about-app',
+//             lastModified: new Date(),
+//             // changeFrequency: 'monthly',
+//         },
+//     ]
+// }
